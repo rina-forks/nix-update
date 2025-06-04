@@ -152,6 +152,31 @@ def nix_prefetch(opts: Options, attr: str) -> str:
     return got
 
 
+def nix_check(opts: Options, attr: str) -> None:
+    expr = f"{get_package(opts)}.{attr}"
+
+    extra_env: dict[str, str] = {}
+    tempdir: tempfile.TemporaryDirectory[str] | None = None
+    stderr = ""
+    if extra_env.get("XDG_RUNTIME_DIR") is None:
+        tempdir = tempfile.TemporaryDirectory()
+        extra_env["XDG_RUNTIME_DIR"] = tempdir.name
+    try:
+        run(
+            [
+                "nix-build",
+                "--expr",
+                expr,
+                '--check',
+                *opts.extra_flags,
+            ],
+            extra_env=extra_env,
+            check=True,
+        )
+    finally:
+        if tempdir:
+            tempdir.cleanup()
+
 def disable_check_meta(opts: Options) -> str:
     return f'(if (builtins.hasAttr "config" (builtins.functionArgs (import {opts.escaped_import_path}))) then {{ config.checkMeta = false; overlays = []; }} else {{ }})'
 
@@ -418,6 +443,7 @@ def update_mix_deps_hash(opts: Options, filename: str, current_hash: str) -> Non
 def update_generic_hash(opts: Options, filename: str, current_hash: str, attr: str) -> None:
     target_hash = nix_prefetch(opts, attr)
     replace_hash(filename, current_hash, target_hash)
+    nix_check(opts, attr)
 
 def update_nuget_deps(opts: Options) -> None:
     fetch_deps_script_path = run(
