@@ -589,6 +589,7 @@ def run_update_script(package: Package, opts: Options) -> None:
 
 def update(opts: Options) -> Package:
     package = eval_attr(opts)
+    print(package)
 
     if package.has_update_script and opts.use_update_script:
         run_update_script(package, opts)
@@ -684,7 +685,7 @@ def update(opts: Options) -> Package:
             else:
                 update_cargo_lock(opts, package.filename, package.cargo_lock)
 
-        for attr, old_hash in zip(opts.extra_hashes, package.extra_hashes):
+        for attr, old_hash in package.extra_hashes:
             if old_hash:
                 update_generic_hash(opts, package.filename, old_hash, attr)
 

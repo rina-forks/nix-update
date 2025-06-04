@@ -67,7 +67,7 @@ class Package:
     has_nuget_deps: bool
     tests: list[str]
     has_update_script: bool
-    extra_hashes: list[str]
+    extra_hashes: list[tuple[str, str]]
 
     raw_version_position: InitVar[dict[str, Any] | None]
     raw_cargo_lock: InitVar[Literal[False] | str | None]
@@ -149,10 +149,10 @@ def eval_expression(
 
     has_update_script = "pkg.passthru.updateScript or null != null"
 
-    extra_hashes_script = "[] ++ " + " ++ ".join(
-        f"[pkg.{x}.outputHash or null]"
+    extra_hashes_script = "[" + " ".join(
+        f"[\"{x}\" (pkg.{x}.outputHash or null)]"
         for x in extra_hashes
-    )
+    ) + "]"
 
     return f"""
 let
