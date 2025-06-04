@@ -151,6 +151,12 @@ def parse_args(args: list[str]) -> Options:
         metavar=("name", "value"),
         default=[],
     )
+    parser.add_argument(
+        "--extra-hash",
+        help="Extra Nix hashes to update (specify attribute path to FOD)",
+        action="append",
+        default=[],
+    )
 
     a = parser.parse_args(args)
     extra_flags = ["--extra-experimental-features", "flakes nix-command"]
@@ -186,6 +192,7 @@ def parse_args(args: list[str]) -> Options:
         lockfile_metadata_path=a.lockfile_metadata_path,
         src_only=a.src_only,
         extra_flags=extra_flags,
+        extra_hashes=a.extra_hash,
     )
 
 

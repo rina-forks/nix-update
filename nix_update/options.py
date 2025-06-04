@@ -33,6 +33,7 @@ class Options:
     lockfile_metadata_path: str = "."
     src_only: bool = False
     extra_flags: list[str] = field(default_factory=list)
+    extra_hashes: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         self.escaped_attribute = ".".join(map(json.dumps, self.attribute.split(".")))

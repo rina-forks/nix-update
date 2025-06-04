@@ -415,6 +415,9 @@ def update_mix_deps_hash(opts: Options, filename: str, current_hash: str) -> Non
     target_hash = nix_prefetch(opts, "mixFodDeps")
     replace_hash(filename, current_hash, target_hash)
 
+def update_generic_hash(opts: Options, filename: str, current_hash: str, attr: str) -> None:
+    target_hash = nix_prefetch(opts, attr)
+    replace_hash(filename, current_hash, target_hash)
 
 def update_nuget_deps(opts: Options) -> None:
     fetch_deps_script_path = run(
@@ -680,5 +683,9 @@ def update(opts: Options) -> Package:
                 generate_lockfile(opts, package.filename, "cargo")
             else:
                 update_cargo_lock(opts, package.filename, package.cargo_lock)
+
+        for attr, old_hash in zip(opts.extra_hashes, package.extra_hashes):
+            if old_hash:
+                update_generic_hash(opts, package.filename, old_hash, attr)
 
     return package

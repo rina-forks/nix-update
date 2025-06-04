@@ -67,6 +67,7 @@ class Package:
     has_nuget_deps: bool
     tests: list[str]
     has_update_script: bool
+    extra_hashes: list[str]
 
     raw_version_position: InitVar[dict[str, Any] | None]
     raw_cargo_lock: InitVar[Literal[False] | str | None]
@@ -109,6 +110,7 @@ def eval_expression(
     flake: bool,
     system: str | None,
     override_filename: str | None,
+    extra_hashes: list[str],
 ) -> str:
     system = f'"{system}"' if system else "builtins.currentSystem"
 
@@ -146,6 +148,11 @@ def eval_expression(
         """
 
     has_update_script = "pkg.passthru.updateScript or null != null"
+
+    extra_hashes_script = "[] ++ " + " ++ ".join(
+        f"[pkg.{x}.outputHash or null]"
+        for x in extra_hashes
+    )
 
     return f"""
 let
@@ -203,6 +210,7 @@ in {{
   maven_deps = pkg.fetchedMavenDeps.outputHash or null;
   has_nuget_deps = pkg ? nugetDeps;
   mix_deps = pkg.mixFodDeps.outputHash or null;
+  extra_hashes = {extra_hashes_script};
   tests = builtins.attrNames (pkg.passthru.tests or {{}});
   has_update_script = {has_update_script};
   src_homepage = pkg.src.meta.homepage or null;
@@ -218,6 +226,7 @@ def eval_attr(opts: Options) -> Package:
         opts.flake,
         opts.system,
         opts.override_filename,
+        opts.extra_hashes,
     )
     cmd = ["nix", "eval", "--json", "--impure", "--expr", expr, *opts.extra_flags]
     res = run(cmd)
