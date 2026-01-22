@@ -66,6 +66,7 @@ class Package:
     maven_deps: str | None
     mix_deps: str | None
     zig_deps: str | None
+    extra_fods: list[tuple[str, str | None]]
     has_nuget_deps: bool
     has_gradle_mitm_cache: bool
     tests: list[str]
@@ -136,6 +137,9 @@ def eval_attr(opts: Options) -> Package:
         "--arg",
         "sanitizePositions",
         "false" if opts.override_filename else "true",
+        "--arg",
+        "extraFods",
+        json.dumps(opts.extra_fods),
     ]
 
     if opts.system:

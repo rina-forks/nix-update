@@ -163,6 +163,12 @@ def parse_args(args: list[str]) -> Options:
         metavar=("name", "value"),
         default=[],
     )
+    parser.add_argument(
+        "--extra-fod",
+        help="Extra Nix FODs to update (attribute name within package)",
+        action="append",
+        default=[],
+    )
 
     a = parser.parse_args(args)
     extra_flags = ["--extra-experimental-features", "flakes nix-command"]
@@ -200,6 +206,7 @@ def parse_args(args: list[str]) -> Options:
         use_github_releases=a.use_github_releases,
         extra_flags=extra_flags,
         update_src=not a.no_src,
+        extra_fods=a.extra_fod,
     )
 
 

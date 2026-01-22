@@ -4,6 +4,7 @@
   system ? builtins.currentSystem,
   isFlake ? false,
   sanitizePositions ? true,
+  extraFods
 }:
 
 let
@@ -13,6 +14,7 @@ let
     substring
     foldl'
     fromJSON
+    map
     ;
 
   # Parse the attribute path from JSON string
@@ -139,6 +141,7 @@ in
   has_gradle_mitm_cache = pkg ? mitmCache;
   mix_deps = pkg.mixFodDeps.outputHash or null;
   zig_deps = pkg.zigDeps.outputHash or null;
+  extra_fods = map (fod: [fod (pkg.${fod}.outputHash or null)]) extraFods;
   tests = builtins.attrNames (pkg.passthru.tests or { });
   inherit has_update_script;
   src_homepage = pkg.src.meta.homepage or null;

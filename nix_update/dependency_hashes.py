@@ -21,6 +21,7 @@ from .utils import run
 
 
 def replace_hash(filename: str, current: str, target: str) -> None:
+    print(f'{filename=} {current=} {target=}')
     normalized_hash = to_sri(target)
     if to_sri(current) != normalized_hash:
         with fileinput.FileInput(filename, inplace=True) as f:
@@ -175,6 +176,11 @@ def update_dependency_hashes(
         dep_value = getattr(package, attr_name, None)
         if dep_value:
             updater(opts, package.filename, dep_value)
+
+    # Update extra dependency hashes
+    for attr_name, dep_value in package.extra_fods:
+        if dep_value:
+            update_hash_with_prefetch(attr_name, opts, package.filename, dep_value)
 
     # Handle nuget deps separately since it's a boolean
     if package.has_nuget_deps:
