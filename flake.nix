@@ -33,6 +33,7 @@
           }:
           {
             packages.nix-update = pkgs.callPackage ./. { };
+            packages.github = pkgs.callPackage ./tests/testpkgs/github.nix { };
             packages.default = config.packages.nix-update;
 
             devShells.default = pkgs.mkShell {
