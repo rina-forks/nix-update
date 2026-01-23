@@ -8,6 +8,6 @@ stdenv.mkDerivation rec {
     owner = "sharkdp";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    sha256 = "sha256-xwLrg6V/4JhKjUwa/dMY/QrsAYA34xZu8ywlObfqKFA=";
   };
 }
